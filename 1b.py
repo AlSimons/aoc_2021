@@ -33,20 +33,11 @@ In this example, there are 5 sums that are larger than the previous sum.
 """
 
 
-def read_depths_into_list():
-    depths = []
-    with open('input.txt') as f:
-        while True:
-            line = f.readline()
-            if not line:
-                break
-            depths.append(int(line.strip()))
-    return depths
-
-
 def main():
     num_increases = 0
-    depths = read_depths_into_list()
+    with open('input.txt') as f:
+        # Use list comprehension instead of readline(); Beth's suggestion.
+        depths = [int(line) for line in f]
     prev_depths_sum = sum(depths[0:3])
     for n in range(1, len(depths) - 2):
         new_depths_sum = sum(depths[n:n+3])
