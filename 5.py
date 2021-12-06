@@ -55,6 +55,8 @@ least two lines overlap?
 
 For part 2, also consider 45 deg. diagonals.
 """
+import timer
+t = timer.Timer()
 
 # names for the collection indices.
 x = 0
@@ -107,7 +109,8 @@ def compute_row_points(start, end) -> list:
     return points
 
 
-def compute_diagonal_points(start, end):
+def al_compute_diagonal_points(start, end):
+    t.start()
     sx, sy = start
     ex, ey = end
     # normalize both points to increasing x axis order
@@ -122,6 +125,24 @@ def compute_diagonal_points(start, end):
         x_coord = sx + n
         y_coord = sy + n if sy < ey else sy - n
         points.append((x_coord, y_coord))
+    t.stop()
+    return points
+
+
+def compute_diagonal_points(start, end):
+    t.start()
+    x_a = start[x]
+    x_b = end[x]
+    y_a = start[y]
+    y_b = end[y]
+    points = []
+    x_range = range(x_a, x_b + (1 if x_a < x_b else -1),
+                    1 if x_a < x_b else -1)
+    y_range = range(y_a, y_b + (1 if y_a < y_b else -1),
+                    1 if y_a < y_b else -1)
+    for i in range(len(x_range)):
+        points.append((x_range[i], y_range[i]))
+    t.stop()
     return points
 
 
@@ -165,6 +186,8 @@ def main():
             if points_list:
                 mark_points(points_list)
         print(check())
+        print(t)
+        t.reset()
 
 
 if __name__ == '__main__':
