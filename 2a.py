@@ -46,7 +46,7 @@ commands = {
 }
 
 
-with open('2/input.txt') as f:
+with open('2_input.txt') as f:
     for line in f:
         command, distance = line.strip().split(' ')
         distances[command] = commands[command](int(distance))

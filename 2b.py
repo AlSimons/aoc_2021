@@ -60,11 +60,10 @@ commands = {
 }
 
 
-with open('2/input.txt') as f:
+with open('2_input.txt') as f:
     for line in f:
         command, distance = line.strip().split(' ')
         commands[command](int(distance))
 
 print(horiz * depth)
 
-# 1251263225

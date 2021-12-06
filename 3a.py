@@ -48,7 +48,7 @@ represent your answer in decimal, not binary.)
 counts = [0 for n in range(12)]
 num_input_lines = 0
 
-for line in open('3/input.txt'):
+for line in open('3_input.txt'):
     num_input_lines += 1
     # Interpret the binary string as an integer
     val = int(line.strip(), 2)

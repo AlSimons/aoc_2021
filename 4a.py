@@ -154,7 +154,7 @@ def score(board_list, winning_board, winning_draw):
 
 
 def main():
-    with open('4/input.txt') as f:
+    with open('4_input.txt') as f:
         draws = read_draws(f)
         board_list, position_dict = read_boards(f)
     for draw in draws:

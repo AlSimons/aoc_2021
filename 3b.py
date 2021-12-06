@@ -80,7 +80,7 @@ def weed_out(input_list: list, gen_or_scrub: int, bit_pos: int):
 
 def initialize():
     data = [None, None]
-    data[o2_gen] = [int(line.strip(), 2) for line in open('3/input.txt')]
+    data[o2_gen] = [int(line.strip(), 2) for line in open('3_input.txt')]
     # Clone instead of reading again.
     data[scrub] = [x for x in data[0]]
     return data
