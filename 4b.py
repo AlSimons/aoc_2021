@@ -18,8 +18,6 @@ Figure out which board will win last. Once it wins, what would its final
 score be?
 """
 
-# This is mostly 4a, with a slight termination
-
 
 def read_draws(f):
     line = f.readline()
@@ -60,7 +58,8 @@ def read_boards(f):
             except KeyError:
                 position_list = []
                 position_dict[row[n]] = position_list
-            position_list.append((num_boards, row_num, n))  # Double parens: appending a collection
+            # Double parens: appending a collection
+            position_list.append((num_boards, row_num, n))
     return board_list, position_dict
 
 
@@ -68,15 +67,21 @@ def process_draw(draw, position_dict, board_list):
     position_list = position_dict[draw]
     for position in position_list:
         board, row, column = position
-        try:
-            board_list[board][row][column] = -1
-        except IndexError:
-            # Boards disappear when they win.
-            pass
+        if board_list[board][0][0] == -2:
+            # Already won. Don't keep marking.
+            continue
+        board_list[board][row][column] = -1
 
 
 def check_for_wins(board_list):  # Returns winning board number
+    # Insight: multple boards can win on a single draw. Have to
+    # return a list, not a single board number.
+    winners = []
     for n in range(len(board_list)):
+        # Don't bother checking boards already marked as winners.
+        if board_list[n][0][0] == -2:
+            # already won.
+            continue
         # Check rows
         for r in range(5):
             won = True
@@ -85,7 +90,7 @@ def check_for_wins(board_list):  # Returns winning board number
                     won = False
                     break
             if won:
-                return n
+                winners.append(n)
         # Check columns
         for c in range(5):
             won = True
@@ -94,33 +99,36 @@ def check_for_wins(board_list):  # Returns winning board number
                     won = False
                     break
             if won:
-                return n
-    return -1  # Flag for no win yet
+                winners.append(n)
+    return winners  # Possibly empty
 
 
-def score(board, winning_draw):
+def score(board_list, board_idx, winning_draw):
+    board = board_list[board_idx]
     unfilled_squares_total = 0
     for row in range(5):
         for column in range(5):
             cell_value = board[row][column]
             if cell_value != -1:
                 unfilled_squares_total += cell_value
+    # mark this board as having won
+    board[0][0] = -2
     return unfilled_squares_total * winning_draw
 
 
 def main():
+    winning_boards_tracker = []
     with open('4_input.txt') as f:
         draws = read_draws(f)
         board_list, position_dict = read_boards(f)
-    num_winners = 0
     for draw in draws:
         process_draw(draw, position_dict, board_list)
-        winning_board = check_for_wins(board_list)
-        if winning_board != -1:  # Flag for no win yet
-            last_winning_board = board_list.pop(winning_board)
-            last_winning_draw = draw
-            continue
-    print(score(last_winning_board, last_winning_draw))
+        winning_boards = check_for_wins(board_list)
+        for winning_board in winning_boards:
+            winning_score = score(board_list, winning_board, draw)
+            winning_boards_tracker.append((winning_board, winning_score))
+
+    print(winning_boards_tracker[-1][1])
 
 
 if __name__ == '__main__':
