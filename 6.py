@@ -80,10 +80,8 @@ Find a way to simulate lanternfish. How many lanternfish would there be after
 #
 with open('6_input.txt') as f:
     line = f.readline()
-days_remaining = line.strip().split(',')
+days_remaining = [int(x) for x in line.strip().split(',')]
 del line
-days_remaining = [int(x) for x in days_remaining]
-
 
 for limit in [80, 256]:
     # Initialize our tracker

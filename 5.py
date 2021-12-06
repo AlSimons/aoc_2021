@@ -1,6 +1,8 @@
 """
 --- Day 5: Hydrothermal Venture ---
-You come across a field of hydrothermal vents on the ocean floor! These vents constantly produce large, opaque clouds, so it would be best to avoid them if possible.
+You come across a field of hydrothermal vents on the ocean floor! These vents
+constantly produce large, opaque clouds, so it would be best to avoid them if
+possible.
 
 They tend to form in lines; the submarine helpfully produces a list of nearby
 lines of vents (your puzzle input) for you to review. For example:
@@ -50,6 +52,8 @@ anywhere in the diagram with a 2 or larger - a total of 5 points.
 
 Consider only horizontal and vertical lines. At how many points do at
 least two lines overlap?
+
+For part 2, also consider 45 deg. diagonals.
 """
 
 # names for the collection indices.
@@ -57,29 +61,32 @@ x = 0
 y = 1
 
 
-def compute_points(start, end):
+def compute_points(start, end, iteration):
     """
-    Given two points, compute all the points between, considering only rows and columns. Part b probably
-    adds angles.
+    Given two points, compute all the points between, inclusive. For part 1.
+    consider only rows and columns. For part 2, also include 45 deg. diagonals
     :param start: A tuple of coordinates, (x, y)
     :param end: Ditto
-    :return: a list of tuples lying on any column or row common to the start and finish.  An empty list if no
-    common row or column.
+    :param iteration: Whether we're doing part 1 or 2
+    :return: a list of tuples lying on any column or row common to the start
+    and finish.  An empty list if no common row, column or (in part 2) diagonal.
     """
     if start[x] == end[x]:
         return compute_col_points(start, end)
     elif start[y] == end[y]:
         return compute_row_points(start, end)
+    # Check for 45 deg. diagonals
+    elif iteration == 2 and abs(start[x] - end[x]) == abs(start[y] - end[y]):
+        return compute_diagonal_points(start, end)
     return []
 
 
 def compute_col_points(start, end) -> list:
     x_coord = start[x]
     # Normalize the coordinates so we can work from low to high.
-    if start[y] < end[y]:
-        sy, ey = start[y], end[y]
-    else:
-        sy, ey = end[y], start[y]
+    sy, ey = start[y], end[y]
+    if sy > ey:
+        sy, ey = ey, sy
 
     points = []
     for y_coord in range(sy, ey + 1):
@@ -90,13 +97,30 @@ def compute_col_points(start, end) -> list:
 def compute_row_points(start, end) -> list:
     y_coord = start[y]
     # Normalize the coordinates so we can work from low to high.
-    if start[x] < end[x]:
-        sx, ex = start[x], end[x]
-    else:
-        sx, ex = end[x], start[x]
+    sx, ex = start[x], end[x]
+    if sx > ex:
+        sx, ex = ex, sx
 
     points = []
     for x_coord in range(sx, ex + 1):
+        points.append((x_coord, y_coord))
+    return points
+
+
+def compute_diagonal_points(start, end):
+    sx, sy = start
+    ex, ey = end
+    # normalize both points to increasing x axis order
+    # If positive slope, ey will be > sy, if negative, sy > ey
+    if sx > ex:
+        sx, ex = ex, sx
+        sy, ey = ey, sy
+    # We know that the distance between both starts and ends is the same here.
+    distance = ex - sx
+    points = []
+    for n in range(distance + 1):  # Plus 1 due to closed interval
+        x_coord = sx + n
+        y_coord = sy + n if sy < ey else sy - n
         points.append((x_coord, y_coord))
     return points
 
@@ -130,13 +154,17 @@ def check():
 
 
 def main():
-    for line in open('5_input.txt'):
-        start, end = parse_line(line.strip())
-        # Get a list of all the points affected by this pair of points.
-        points_list = compute_points(start, end)
-        if points_list:
-            mark_points(points_list)
-    print(check())
+    global points_dict
+    for iteration in [1, 2]:
+        # Have to initialize our point tracker for each iteration
+        points_dict = {}
+        for line in open('5_input.txt'):
+            start, end = parse_line(line.strip())
+            # Get a list of all the points affected by this pair of points.
+            points_list = compute_points(start, end, iteration)
+            if points_list:
+                mark_points(points_list)
+        print(check())
 
 
 if __name__ == '__main__':
