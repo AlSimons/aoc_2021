@@ -31,15 +31,19 @@ So, suppose you have a lanternfish with an internal timer value of 3:
     5, and the second lanternfish would have an internal timer of 7.
 
 A lanternfish that creates a new fish resets its timer to 6, not 7 (because
-0 is included as a valid timer value). The new lanternfish starts with an internal timer of 8 and does not start counting down until the next day.
+0 is included as a valid timer value). The new lanternfish starts with an
+internal timer of 8 and does not start counting down until the next day.
 
 Realizing what you're trying to do, the submarine automatically produces a
-list of the ages of several hundred nearby lanternfish (your puzzle input). For example, suppose you were given the following list:
+list of the ages of several hundred nearby lanternfish (your puzzle input).
+For example, suppose you were given the following list:
 
 3,4,3,1,2
 
 This list means that the first fish has an internal timer of 3, the second
-fish has an internal timer of 4, and so on until the fifth fish, which has an internal timer of 2. Simulating these fish over several days would proceed as follows:
+fish has an internal timer of 4, and so on until the fifth fish, which has an
+internal timer of 2. Simulating these fish over several days would proceed as
+follows:
 
 Initial state: 3,4,3,1,2
 After  1 day:  2,3,2,0,1
@@ -71,18 +75,29 @@ Find a way to simulate lanternfish. How many lanternfish would there be after
 80 days?
 """
 
+#
+# Second implementation, much more memory simple.
+#
 with open('6_input.txt') as f:
     line = f.readline()
 days_remaining = line.strip().split(',')
-days_remaining = [int(x) for x in days_remaining]
 del line
+days_remaining = [int(x) for x in days_remaining]
+
 
 for limit in [80, 256]:
+    # Initialize our tracker
+    num_with_days_remaining = [0 for x in range(9)]
+    for n in days_remaining:
+        num_with_days_remaining[n] += 1
+
     for n in range(limit):
-        for idx in range(len(days_remaining)):
-            if days_remaining[idx] == 0:
-                days_remaining[idx] = 6
-                days_remaining.append(8)
-            else:
-                days_remaining[idx] -= 1
-    print(len(days_remaining))
+        # Day 0 is special
+        num_at_zero = num_with_days_remaining[0]
+        for day in range(1, len(num_with_days_remaining)):
+            num_with_days_remaining[day - 1] = num_with_days_remaining[day]
+        # All of the fish with 0 days start again at 6
+        num_with_days_remaining[6] += num_at_zero
+        # and spawn 1 fish each with a time to spawn of 8
+        num_with_days_remaining[8] = num_at_zero
+    print(sum(num_with_days_remaining))
