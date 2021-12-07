@@ -1,4 +1,5 @@
-Pipfile
+Pipfile*
+__pycache__
 .idea
 1a
 *_input.txt
