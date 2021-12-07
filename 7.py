@@ -4,24 +4,21 @@
 
 positions = [int(x) for x in open('7_input.txt').read().strip().split(',')]
 
-print(max(positions))
-minimum_cost = 9999999999
-position_for_minimum = -1
+minimum_cost_a = 9999999999
+minimum_cost_b = 9999999999
 # Every possible position
 for n in range(max(positions)):
-    cost = 0
+    cost_a = 0
+    cost_b = 0
     for m in range(len(positions)):
+        cost_a += abs(positions[m] - n)
+        cost_b += sum(range(abs(positions[m] - n) + 1))
 
-        # Solution for a
-        # cost += abs(positions[m] - n)
-
-        # Solution for b
-        cost += sum(range(abs(positions[m] - n) + 1))
-
-    if cost < minimum_cost:
-        position_for_minimum = n
-        minimum_cost = cost
-print(minimum_cost)
+    if cost_a < minimum_cost_a:
+        minimum_cost_a = cost_a
+    if cost_b < minimum_cost_b:
+        minimum_cost_b = cost_b
+print(f"Part A: {minimum_cost_a}\nPart B: {minimum_cost_b}")
 
 
 
